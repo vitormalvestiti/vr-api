@@ -1,4 +1,5 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as amqp from 'amqplib';
 import type { Channel, ChannelModel } from 'amqplib';
 
@@ -7,9 +8,15 @@ export class RabbitMQService {
     private connection!: ChannelModel;
     private channel!: Channel;
 
+    constructor(private readonly configService: ConfigService) { }
+
     async init() {
         if (!this.connection) {
-            this.connection = await amqp.connect('amqps://bjnuffmq:gj-YQIiEXyfxQxjsZtiYDKeXIT8ppUq7@jaragua-01.lmq.cloudamqp.com/bjnuffmq');
+            const rabbitUrl = this.configService.get<string>('RABBITMQ_URL') || '';
+            if (!rabbitUrl) {
+                throw new Error('RabbitMQ URL não configurada (RABBITMQ_URL ausente no .env)');
+            }
+            this.connection = await amqp.connect(rabbitUrl);
             this.channel = await this.connection.createChannel();
             console.log('[RabbitMQ] Canal inicializado');
         }
