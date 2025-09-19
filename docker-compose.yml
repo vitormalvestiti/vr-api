@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"  
+      - "15672:15672" 
+    environment:
+      RABBITMQ_DEFAULT_USER: bjnuffmq
+      RABBITMQ_DEFAULT_PASS: gj-YQIiEXyfxQxjsZtiYDKeXIT8ppUq7
+
+  backend:
+    build: .
+    container_name: nest-backend
+    command: npm run start:dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - rabbitmq
