@@ -1,18 +1,30 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationService } from './notification.service';
+import { RabbitMQService } from './rabbitmq.service';
 
 describe('NotificationService', () => {
   let service: NotificationService;
+  let rabbit: RabbitMQService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [NotificationService],
-    }).compile();
-
-    service = module.get<NotificationService>(NotificationService);
+  beforeEach(() => {
+    rabbit = {
+      publish: jest.fn(),
+      consume: jest.fn(),
+    } as any;
+    service = new NotificationService(rabbit);
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  it('deve publicar mensagem na fila de entrada', async () => {
+    const spy = jest.spyOn(rabbit, 'publish').mockResolvedValueOnce(undefined);
+
+    await service.createNotification('123', 'Mensagem teste');
+
+    expect(spy).toHaveBeenCalledWith('fila.notificacao.entrada.vitor', {
+      mensagemId: '123',
+      conteudoMensagem: 'Mensagem teste',
+    });
+  });
+
+  it('deve retornar status default se não existir', () => {
+    expect(service.getStatus('nao-existe')).toBe('NAO_ENCONTRADO');
   });
 });
