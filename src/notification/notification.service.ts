@@ -1,5 +1,5 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { RabbitMQService } from './rabbitmq.service';
+import { RabbitMQService } from '../rabbitmq/rabbitmq.service';
 import { NotificationGateway } from './notification.gateway';
 
 @Injectable()

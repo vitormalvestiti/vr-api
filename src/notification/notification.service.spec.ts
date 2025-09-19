@@ -1,5 +1,5 @@
 import { NotificationService } from './notification.service';
-import { RabbitMQService } from './rabbitmq.service';
+import { RabbitMQService } from '../rabbitmq/rabbitmq.service';
 
 describe('NotificationService', () => {
   let service: NotificationService;
